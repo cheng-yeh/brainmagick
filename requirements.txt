@@ -4,8 +4,6 @@
 #
 # conda install pytorch cudatoolkit=10.1 -c pytorch
 
-torch>=1.5
-torchaudio>=0.7.0
 hydra-core>=1.1
 julius
 mne>=0.24.1

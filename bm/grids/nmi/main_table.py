@@ -23,7 +23,7 @@ def explorer(launcher):
 
     seeds = [2036, 2037, 2038]
     audio_sets = [
-        'audio_mous',
+        #'audio_mous',
         'gwilliams2022',
         'broderick2019',
         'brennan2019',
