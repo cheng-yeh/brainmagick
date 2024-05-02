@@ -44,10 +44,10 @@ def _prepare():
         print("Downloading Broderick_2019 dataset...")
 
         dsets = {
-            #"Cocktail Party.zip": "https://datadryad.org/stash/downloads/file_stream/222584",
-            #"N400.zip": "https://datadryad.org/stash/downloads/file_stream/222585",
-            #"Natural Speech - Reverse.zip": "https://datadryad.org/stash/downloads/file_stream/222586",
-            #"Natural Speech.zip": "https://datadryad.org/stash/downloads/file_stream/222587",
+            "Cocktail Party.zip": "https://datadryad.org/stash/downloads/file_stream/222584",
+            "N400.zip": "https://datadryad.org/stash/downloads/file_stream/222585",
+            "Natural Speech - Reverse.zip": "https://datadryad.org/stash/downloads/file_stream/222586",
+            "Natural Speech.zip": "https://datadryad.org/stash/downloads/file_stream/222587",
             "Speech in Noise.zip": "https://datadryad.org/stash/downloads/file_stream/222588"
         }
 
@@ -280,22 +280,58 @@ class Broderick2019Recording(api.Recording):
         )
         mat = loadmat(str(eeg_fname))
 
+        # Load .npz file with preprocessed EEG data
+        eeg_npz_fname = (
+            paths.download
+            / "Natural Speech"
+            / "EEG"
+            / f"Subject{self.subject_uid}"
+            / f"Subject{self.subject_uid}_Run{self.run_id}.npz"
+        )
+        npz_data = np.load(str(eeg_npz_fname))
+        eeg_preprocessed = npz_data['Z_est']
+
         assert mat["fs"][0][0] == 128
         ch_types = ["eeg"] * 128
         # FIXME montage?
-        montage = mne.channels.make_standard_montage("biosemi128")
-        info = mne.create_info(montage.ch_names, 128.0, ch_types)
-        eeg = mat["eegData"].T * 1e6
-        assert len(eeg) == 128
-        raw = mne.io.RawArray(eeg, info)
-        raw.set_montage(montage)
+        #montage = mne.channels.make_standard_montage("biosemi128")
+        #info = mne.create_info(montage.ch_names, 128.0, ch_types)
+
+        # Load customized 3D montage
+        montage_fname = (
+            paths.download
+            / "Natural Speech"
+            / "EEG"
+            / "montage.npz"
+        )
+        montage_data = np.load(str(montage_fname))
+        montage_positions = montage_data['positions']
+        montage_names = montage_data['names']
+
+        # Create info for EEG channels
+        ch_types = ["eeg"] * 128
+        info = mne.create_info(montage_names.tolist(), 128.0, ch_types)
+
+        # Create RawArray with preprocessed EEG data
+        raw = mne.io.RawArray(eeg_preprocessed.T, info)
+
+        # Set the positions of the electrodes using the customized montage
+        custom_montage = mne.channels.Montage(
+            pos=montage_positions, ch_names=montage_names, kind='custom'
+        )
+        raw.set_montage(custom_montage)
+
+        #eeg = mat["eegData"].T * 1e6
+        #assert len(eeg) == 128
+        #raw = mne.io.RawArray(eeg, info)
+        #raw.set_montage(montage)
 
         # TODO make mastoids EEG and add layout position
-        info_mas = mne.create_info(
-            ["mastoids1", "mastoids2"], 128.0, ["misc", "misc"]
-        )
-        mastoids = mne.io.RawArray(mat["mastoids"].T * 1e6, info_mas)
-        raw.add_channels([mastoids])
+        #info_mas = mne.create_info(
+        #    ["mastoids1", "mastoids2"], 128.0, ["misc", "misc"]
+        #)
+        #mastoids = mne.io.RawArray(mat["mastoids"].T * 1e6, info_mas)
+        #raw.add_channels([mastoids])
 
         raw = raw.pick_types(
             meg=False, eeg=True, misc=False, eog=False, stim=False

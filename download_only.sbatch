@@ -17,4 +17,4 @@ conda install pytorch=2.0.1 torchaudio=2.0.2 cudatoolkit=11.3 -c pytorch -y
 pip install -U -r requirements.txt
 pip install -e .
 python -m spacy download en_core_web_md
-dora run download_only=true 'dset.selections=[audio_mous]'
+dora run download_only=true 'dset.selections=[broderick2019]'
