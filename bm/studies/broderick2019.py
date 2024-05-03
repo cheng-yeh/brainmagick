@@ -288,8 +288,8 @@ class Broderick2019Recording(api.Recording):
             / f"Subject{self.subject_uid}"
             / f"Subject{self.subject_uid}_Run{self.run_id}.npz"
         )
-        npz_data = np.load(str(eeg_npz_fname))
-        eeg_preprocessed = npz_data['Z_est']
+        eeg_preprocessed = np.load(str(eeg_npz_fname), allow_pickle=True)
+        print(eeg_preprocessed)
 
         assert mat["fs"][0][0] == 128
         ch_types = ["eeg"] * 128
@@ -304,9 +304,9 @@ class Broderick2019Recording(api.Recording):
             / "EEG"
             / "montage.npz"
         )
-        montage_data = np.load(str(montage_fname))
-        montage_positions = montage_data['positions']
-        montage_names = montage_data['names']
+        montage_positions = np.load(str(montage_fname))
+        print(montage_positions)
+        montage_names = range(len(montage_positions))
 
         # Create info for EEG channels
         ch_types = ["eeg"] * 128

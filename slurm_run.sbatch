@@ -2,7 +2,7 @@
 #SBATCH -J main_table                           # Job name
 #SBATCH --account=gts-rs275-paid                # charge account
 #SBATCH -N 1 --gres=gpu:RTX_6000:2              # Number of nodes and cores per node required
-#SBATCH --mem-per-gpu=24G                       # Memory per core
+#SBATCH --mem-per-gpu=120G                      # Memory per core
 #SBATCH -t 1440                                 # Duration of the job (Ex: 15 mins)
 #SBATCH -q inferno                              # QOS Name
 #SBATCH -o Report-%j.out                        # Combined output and error messages file

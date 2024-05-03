@@ -18,5 +18,5 @@ pip install -U -r requirements.txt
 pip install -e .
 python -m spacy download en_core_web_md
 dora grid nmi.main_table --dry_run --init
-dora run -f 89421bb6 -d
+dora run -f 557f5f8a -d
 dora grid nmi.main_table '!seed' '!features' '!wer_random' --dry_run --init
