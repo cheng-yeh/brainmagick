@@ -53,6 +53,8 @@ def _prepare():
 
         for dset, url in dsets.items():
             zipfile = paths.download / dset
+            if zipfile.exists():
+                continue
             urlretrieve(url, zipfile)
             print(f"Extracting {zipfile}...")
             with ZipFile(str(zipfile), "r") as zip:
