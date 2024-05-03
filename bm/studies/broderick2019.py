@@ -290,8 +290,10 @@ class Broderick2019Recording(api.Recording):
             / f"Subject{self.subject_uid}"
             / f"Subject{self.subject_uid}_Run{self.run_id}.npz"
         )
-        eeg_preprocessed = np.load(str(eeg_npz_fname), allow_pickle=True)
-        print(eeg_preprocessed)
+        npz_data = np.load(str(eeg_npz_fname), allow_pickle=True)
+        eeg_preprocessed = npz_data['Z_est']
+        print(eeg_preprocessed.T)
+        print(eeg_preprocessed.shape)
 
         assert mat["fs"][0][0] == 128
         ch_types = ["eeg"] * 128
@@ -304,15 +306,17 @@ class Broderick2019Recording(api.Recording):
             paths.download
             / "Natural Speech"
             / "EEG"
-            / "montage.npz"
+            / "all_sub_pos.npz"
         )
-        montage_positions = np.load(str(montage_fname))
+        montage_data = np.load(str(montage_fname))
+        montage_positions = montage_data['position']
         print(montage_positions)
+        print(len(montage_positions))
         montage_names = range(len(montage_positions))
 
         # Create info for EEG channels
         ch_types = ["eeg"] * 128
-        info = mne.create_info(montage_names.tolist(), 128.0, ch_types)
+        info = mne.create_info(list(montage_names), 128.0, ch_types)
 
         # Create RawArray with preprocessed EEG data
         raw = mne.io.RawArray(eeg_preprocessed.T, info)
