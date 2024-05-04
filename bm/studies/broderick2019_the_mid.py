@@ -282,22 +282,57 @@ class Broderick2019Recording(api.Recording):
         )
         mat = loadmat(str(eeg_fname))
 
+        # Load .npz file with preprocessed EEG data
+        eeg_npz_fname = (
+            paths.download
+            / "Natural Speech"
+            / "EEG"
+            / f"Subject{self.subject_uid}"
+            / f"Subject{self.subject_uid}_Run{self.run_id}.npz"
+        )
+        npz_data = np.load(str(eeg_npz_fname), allow_pickle=True)
+        eeg_preprocessed = npz_data['aligned_Z_mid']
+
         assert mat["fs"][0][0] == 128
         ch_types = ["eeg"] * 128
         # FIXME montage?
-        montage = mne.channels.make_standard_montage("biosemi128")
-        info = mne.create_info(montage.ch_names, 128.0, ch_types)
-        eeg = mat["eegData"].T * 1e6
-        assert len(eeg) == 128
-        raw = mne.io.RawArray(eeg, info)
+        #montage = mne.channels.make_standard_montage("biosemi128")
+        #info = mne.create_info(montage.ch_names, 128.0, ch_types)
+
+        # Load customized 3D montage
+        montage_fname = (
+            paths.download
+            / "Natural Speech"
+            / "EEG"
+            / "all_sub_pos.npz"
+        )
+        montage_data = np.load(str(montage_fname))
+        montage_positions = montage_data['position']
+        montage_names = [str(name) for name in range(len(montage_positions))]
+
+        # Create info for EEG channels
+        ch_types = ["eeg"] * 128
+        info = mne.create_info(montage_names, 128.0, ch_types)
+
+        # Create RawArray with preprocessed EEG data
+        raw = mne.io.RawArray(eeg_preprocessed.T, info)
+
+        # Set the positions of the electrodes using the customized montage
+        ch_pos = {montage_names[j]: montage_positions[j] for j in range(128)}
+        montage = mne.channels.make_dig_montage(ch_pos = ch_pos)
         raw.set_montage(montage)
 
+        #eeg = mat["eegData"].T * 1e6
+        #assert len(eeg) == 128
+        #raw = mne.io.RawArray(eeg, info)
+        #raw.set_montage(montage)
+
         # TODO make mastoids EEG and add layout position
-        info_mas = mne.create_info(
-            ["mastoids1", "mastoids2"], 128.0, ["misc", "misc"]
-        )
-        mastoids = mne.io.RawArray(mat["mastoids"].T * 1e6, info_mas)
-        raw.add_channels([mastoids])
+        #info_mas = mne.create_info(
+        #    ["mastoids1", "mastoids2"], 128.0, ["misc", "misc"]
+        #)
+        #mastoids = mne.io.RawArray(mat["mastoids"].T * 1e6, info_mas)
+        #raw.add_channels([mastoids])
 
         raw = raw.pick_types(
             meg=False, eeg=True, misc=False, eog=False, stim=False
