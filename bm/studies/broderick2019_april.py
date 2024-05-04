@@ -29,7 +29,7 @@ SPACY_MODEL = "en_core_web_md"
 
 
 def get_paths() -> utils.StudyPaths:
-    return utils.StudyPaths(Broderick2019Recording.study_name())
+    return utils.StudyPaths(Broderick2019_aprilRecording.study_name())
 
 
 def _prepare():
@@ -41,7 +41,7 @@ def _prepare():
 
     # download public files
     if not zip_dset.exists():
-        print("Downloading Broderick_2019 dataset...")
+        print("Downloading Broderick_2019_april dataset...")
 
         dsets = {
             "Cocktail Party.zip": "https://datadryad.org/stash/downloads/file_stream/222584",
@@ -63,7 +63,7 @@ def _prepare():
     '''
     # extract
     if not any([f.name == "N400.zip" for f in paths.download.iterdir()]):
-        print("Extracting Broderick_2019 dataset...")
+        print("Extracting Broderick_2019_april dataset...")
         with ZipFile(str(paths.download / zip_dset), "r") as zip:
             zip.extractall(str(paths.download))
     dsets = [
@@ -84,19 +84,19 @@ def _prepare():
     # download audio files
     zip_private = paths.download / "private.zip"
     if not zip_private.exists():
-        print("Downloading Broderick_2019 private files...")
+        print("Downloading Broderick_2019_april private files...")
         url = "https://ai.honu.io/papers/brainmagick/private.zip"
         urlretrieve(url, zip_private)
 
     # extract private files
     folder_private = paths.download / "private"
     if not folder_private.exists():
-        print("Extracting Broderick_2019 private files...")
+        print("Extracting Broderick_2019_april private files...")
         with ZipFile(str(zip_private), "r") as zip:
             zip.extractall(paths.download)
 
 
-class _BroderickMetadata:
+class _Broderick_aprilMetadata:
     def _parse_json(self, run_id: str) -> pd.DataFrame:
         """parse json to flatten word and phoneme into a dataframe"""
         folder = get_paths().download
@@ -230,7 +230,7 @@ class _BroderickMetadata:
         return json
 
 
-class Broderick2019Recording(api.Recording):
+class Broderick2019_aprilRecording(api.Recording):
 
     data_url = "https://datadryad.org/stash/dataset/doi:10.5061/dryad.070jc"
     paper_url = "https://pubmed.ncbi.nlm.nih.gov/29478856/"
@@ -241,10 +241,10 @@ class Broderick2019Recording(api.Recording):
     device = "eeg"
     description = """
     """
-    _metadata = _BroderickMetadata()
+    _metadata = _Broderick_aprilMetadata()
 
     @classmethod
-    def iter(cls) -> tp.Iterator["Broderick2019Recording"]:  # type: ignore
+    def iter(cls) -> tp.Iterator["Broderick2019_aprilRecording"]:  # type: ignore
         """Returns a generator of all recordings"""
         # download, extract, organize
         paths = get_paths()
