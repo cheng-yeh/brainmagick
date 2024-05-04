@@ -298,13 +298,11 @@ class Broderick2019_aprilRecording(api.Recording):
         # FIXME montage?
         montage = mne.channels.make_standard_montage("biosemi128")
         info = mne.create_info(montage.ch_names, 128.0, ch_types)
-        eeg = mat["eegData"].T * 1e6
-        assert len(eeg) == 128
-        raw = mne.io.RawArray(eeg, info)
-        raw.set_montage(montage)
-
+        
         # Create RawArray with preprocessed EEG data
         raw = mne.io.RawArray(eeg_preprocessed.T, info)
+
+        raw.set_montage(montage)
 
         raw = raw.pick_types(
             meg=False, eeg=True, misc=False, eog=False, stim=False
