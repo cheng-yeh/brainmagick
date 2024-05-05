@@ -23,16 +23,19 @@ def explorer(launcher):
 
     seeds = [2036, 2037, 2038]
     audio_sets = [
+        'audio_mous',
+        'gwilliams2022',
         'broderick2019',
         'broderick2019_april',
-        'broderick2019_the_april'
+        'broderick2019_the_april',
+        'brennan2019',
     ]
 
     # Results from Table 2.
     with launcher.job_array():
         for seed, dset in product(seeds, audio_sets):
             sub = launcher.bind({'dset.selections': [dset]}, seed=seed)
-            if 'broderick2019' in dset:
+            if dset in ['broderick2019', 'broderick2019_april', 'broderick2019_the_april']:
                 # Faster eval during training, this is only during training, not
                 # for the final eval!
                 sub.bind_({'test.wer_recordings': 100})
