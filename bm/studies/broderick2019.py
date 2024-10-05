@@ -243,7 +243,7 @@ class Broderick2019Recording(api.Recording):
         subjects = sorted(subjects)
 
         for subject in subjects:
-            for run_id in range(1, 21):
+            for run_id in range(1, 3):
                 recording = cls(subject_uid=str(subject), run_id=str(run_id))
                 yield recording
 
