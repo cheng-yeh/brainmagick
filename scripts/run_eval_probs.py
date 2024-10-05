@@ -450,7 +450,8 @@ if __name__ == "__main__":
         overwrite=False,
 
         # Slurm params
-        slurm_partition="devlab,learnlab",
+        slurm_account="gts-rs275-paid",
+        slurm_partition="inferno",
         slurm_array_parallelism=100,
         gpus_per_node=1,
         cpus_per_task=4,
