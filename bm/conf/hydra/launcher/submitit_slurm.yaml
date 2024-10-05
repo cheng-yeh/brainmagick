@@ -7,6 +7,6 @@ gpus_per_node: 2  # ddp not currently supported
 mem_gb: 200
 name: ${hydra.job.name}
 partition: inferno                      # Updated partition
-slurm_account: "gts-rs275-paid"        # Added account
+account: "gts-rs275-paid"        # Added account
 comment: null
 constraint: null
